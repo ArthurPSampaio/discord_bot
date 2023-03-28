@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from apikey import *
+from apikeys import *
 
 intents = discord.Intents.default()
 intents.members = True
@@ -12,3 +12,7 @@ client = commands.Bot(command_prefix = '!', intents=intents)
 client.run(BOTTOKEN.bottoken)
 
 print('teste')
+@client.event
+async def on_ready():
+    await print(f'We have loged on as {client.user} oiii')
+
