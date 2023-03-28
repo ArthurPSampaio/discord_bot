@@ -11,8 +11,7 @@ client = commands.Bot(command_prefix = '!', intents=intents)
 
 client.run(BOTTOKEN.bottoken)
 
-print('teste')
 @client.event
 async def on_ready():
-    await print(f'We have loged on as {client.user} oiii')
+    print(f'We have logged on as {client.user}')
 
