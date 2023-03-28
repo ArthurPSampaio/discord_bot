@@ -9,33 +9,30 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-client = commands.Bot(command_prefix = '!', intents=intents)
-# bot = commands.Bot(command_prefix='!', intents=intents)
+# client = commands.Bot(command_prefix = '!', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'We have logged on as {client.user}')
+    print(f'We have logged on as {bot.user}')
 
-@client.event
+@bot.event
 async def on_member_join(member):
-    channel = client.get_channel(725848521449930816)
+    channel = bot.get_channel(725848521449930816)
     await channel.send(f'Guten morgen {member.mention}.')
 
-
-@client.command(name='chat')
+@bot.command(name='chat')
 async def chat_command(ctx, *, message):
     # verificar se o autor da mensagem é o bot
     if ctx.author.bot:
         return
-
     # enviar mensagem de saudação
-    # await ctx.send(f'Olá, eu sou um bot de chat! Você disse: {message}')
-
+    await ctx.send(f'Olá, eu sou um bot de chat! Você disse: {message}')
     # chamar a API do ChatGPT
     openai.api_key = openai_API
     response = openai.Completion.create(
         engine="davinci",
-        prompt=f"Conversa: {message}\nBot:",
+        prompt=f"Bot:",
         temperature=0.7,
         max_tokens=100,
         n=1,
@@ -47,4 +44,5 @@ async def chat_command(ctx, *, message):
     await ctx.send(response.choices[0].text)
 
 
-client.run(BOTTOKEN.bottoken)
+
+bot.run(BOTTOKEN.bottoken)
