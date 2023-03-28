@@ -11,3 +11,4 @@ client = commands.Bot(command_prefix = '!', intents=intents)
 
 client.run(BOTTOKEN.bottoken)
 
+print('teste')
