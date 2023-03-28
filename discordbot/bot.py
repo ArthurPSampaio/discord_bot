@@ -8,4 +8,4 @@ intents.message_content = True
 client = commands.Bot(command_prefix = '!', intents=intents)
 
 client.run('bot token')
-print('test')
+print('teste123123123123')
