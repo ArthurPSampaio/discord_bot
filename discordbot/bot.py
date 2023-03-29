@@ -1,6 +1,11 @@
 import discord
 import openai
 from discord.ext import commands
+import requests
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
+
 
 from apikeys import *
 
@@ -39,5 +44,36 @@ async def gpt(ctx: commands.context, *, prompt: str):
     embed = discord.Embed(title="Resposta:", description=response.choices[0].text, color=0x00ff00)
     await ctx.send(embed=embed)
 
+@bot.command()
+async def join(ctx):
+    if ctx.author.voice:
+        channel = ctx.message.author.voice.channel
+        await channel.connect()
+    else :
+        await ctx.send("You must be in a channel to run this command")
+
+@bot.command()
+async def leave(ctx):
+    if ctx.voice_client:
+        channel = ctx.guild.voice_client
+        await channel.disconnect()
+
+@bot.command()
+async def playfy(ctx, msc, author):
+    if ctx.author.bot:
+        return
+    url = "https://spotify117.p.rapidapi.com/search/"
+
+    querystring = {"keyword":"<REQUIRED>","type":"<REQUIRED>"}
+
+    headers = {
+        "X-RapidAPI-Key": spotifyAPI,
+        "X-RapidAPI-Host": spotifyHost
+    }
+
+    response = requests.request("GET", url, headers=headers, params=querystring)
+
+    print(response.text)
+    
 
 bot.run(BOTTOKEN.bottoken)
