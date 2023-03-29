@@ -1,11 +1,8 @@
 import discord
 import openai
+import asyncio
 from discord.ext import commands
 import requests
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
-
-
 
 from apikeys import *
 
@@ -58,22 +55,5 @@ async def leave(ctx):
         channel = ctx.guild.voice_client
         await channel.disconnect()
 
-@bot.command()
-async def playfy(ctx, msc, author):
-    if ctx.author.bot:
-        return
-    url = "https://spotify117.p.rapidapi.com/search/"
-
-    querystring = {"keyword":"<REQUIRED>","type":"<REQUIRED>"}
-
-    headers = {
-        "X-RapidAPI-Key": spotifyAPI,
-        "X-RapidAPI-Host": spotifyHost
-    }
-
-    response = requests.request("GET", url, headers=headers, params=querystring)
-
-    print(response.text)
-    
 
 bot.run(BOTTOKEN.bottoken)
