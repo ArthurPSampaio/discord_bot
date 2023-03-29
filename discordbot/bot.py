@@ -1,5 +1,8 @@
 import discord
 import openai
+from craiyon import Craiyon, craiyon_utils
+from io import BytesIO
+import base64
 import asyncio
 from discord.ext import commands
 import requests
@@ -10,6 +13,8 @@ from apikeys import *
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
+
+generator = Craiyon()
 
 # bot = commands.Bot(command_prefix = '!', intents=intents)
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -57,28 +62,20 @@ async def leave(ctx):
         await channel.disconnect()
 
 @bot.command()
-async def img(ctx, *, description):
-    # Parâmetros da solicitação HTTP
-    data = {
-        "model": "image-alpha-001",
-        "prompt": description,
-        "num_images": 1,
-        "size": "1024x1024"
-    }
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {openai_API}"
-    }
+async def img(ctx, *, prompt: str):
+    await ctx.send(f"Generating prompt \"{prompt}\"...")
 
-    # Enviar a solicitação HTTP
-    response = requests.post("https://api.openai.com/v1/images/generations", data=json.dumps(data), headers=headers)
+    generated_images = await generator.async_generate(prompt)
+    b64_list = await craiyon_utils.async_encode_base64(
+        generated_images.images)
 
-    # Obter a URL da imagem gerada
-    image_url = response.json()["data"][0]["url"]
+    images1 = []
+    for index, image in enumerate(b64_list):
+        img_bytes = BytesIO(base64.b64decode(image))
+        image = discord.File(img_bytes)
+        image.filename = f"result{index}.webp"
+        images1.append(image)
 
-    # Enviar a imagem para o canal do Discord
-    embed = discord.Embed(title="Imagem gerada com base na descrição de texto:", description=description)
-    embed.set_image(url=image_url)
-    await ctx.send(embed=embed)
+    await ctx.reply(files=images1)  # dá reply na mensagem do usuário com as 9 imagens geradas
 
 bot.run(BOTTOKEN.bottoken)
