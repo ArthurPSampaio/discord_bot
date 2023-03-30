@@ -4,6 +4,9 @@ import openai
 import base64
 import asyncio
 import requests
+from craiyon import Craiyon, craiyon_utils
+from io import BytesIO
+import base64
 import pandas as pd
 import json
 # from --- import ---
@@ -65,22 +68,20 @@ async def leave(ctx):
         channel = ctx.guild.voice_client
         await channel.disconnect()
 
-
 @bot.command()
 async def img(ctx, *, prompt: str):
     await ctx.send(f"Generating prompt \"{prompt}\"...")
     generated_images = await generator.async_generate(prompt)
     b64_list = await craiyon_utils.async_encode_base64(
         generated_images.images)
-
     images1 = []
     for index, image in enumerate(b64_list):
         img_bytes = BytesIO(base64.b64decode(image))
         image = discord.File(img_bytes)
         image.filename = f"result{index}.webp"
         images1.append(image)
-
     await ctx.reply(files=images1)  # dá reply na mensagem do usuário com as 9 imagens geradas
+
 
 @bot.command()
 async def lol(ctx, * ,player):
