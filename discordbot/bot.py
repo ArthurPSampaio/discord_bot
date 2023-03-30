@@ -85,13 +85,28 @@ async def img(ctx, *, prompt: str):
 
 @bot.command()
 async def lol(ctx, * ,player):
-    # global variables
     api_key = league_of_legendsAPI
     watcher = LolWatcher(api_key)
     my_region = 'br1'
+    try:
+        status = watcher.summoner.by_name(my_region, player)
+        ranked_status_player = watcher.league.by_summoner(my_region, status['id'])
+        
+        print(ranked_status_player[0]) # [0] get into to the dic and show player's info
+        # the error was: it was necessary to access the list first, then manipulate the dict
+        embed = discord.Embed(title=status['name'])
+        embed.add_field(inline=True, name='Wins ', value=str(ranked_status_player[0]['wins']))
+        embed.add_field(inline=True, name='Losses ', value=str(ranked_status_player[0]['losses']))
+        embed.add_field(inline=True, name='Pdls ', value=str(ranked_status_player[0]['leaguePoints']))
+        embed.add_field(inline=True, name='Tier ', value=str(ranked_status_player[0]['tier']))
+        embed.add_field(inline=True, name='Rank ', value=str(ranked_status_player[0]['rank']))
+        await ctx.send(embed=embed)
+    except ApiError as e:
+        await ctx.send(f'Error: {e}')
 
-    me = watcher.summoner.by_name(my_region, player)
-    print(me)
+
+
+
 
 bot.run(BOTTOKEN.bottoken)
 
