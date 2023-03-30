@@ -86,14 +86,13 @@ async def img(ctx, *, description):
     await ctx.send(embed=embed)
 
 @bot.command()
-async def lol(ctx, * ,player):
+async def lol(ctx, * ,champion):
     # global variables
     api_key = league_of_legendsAPI
     watcher = LolWatcher(api_key)
     my_region = 'br1'
-
-    me = watcher.summoner.by_name(my_region, player)
-    print(me)
+    champions_url = f"http://ddragon.leagueoflegends.com/cdn/13.6.1/data/pt_BR/champion/{champion}.json"
+    print(champions_url)
     
 
 bot.run(BOTTOKEN.bottoken)
