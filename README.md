@@ -9,3 +9,9 @@ Para usar o bot, basta convidá-lo para o seu servidor e digitar os comandos cor
 - !gpt: Inicia uma conversa com o Chat GPT.
 - !img: Gera uma imagem com IA usando o Craiyon.
 - !lol: Consulta o perfil de um jogador do League of Legends.
+
+
+# Autores
+
+| [<img src="https://avatars.githubusercontent.com/u/113519439?v=4" width=115><br><sub>Arthur Pandolfo de Abreu Sampaio</sub>](https://github.com/ArthurPSampaio) |  [<img src="https://avatars.githubusercontent.com/u/122110138?v=4" width=115><br><sub>Cleyton Souza Martins</sub>](https://github.com/CleytonSM) | 
+| :---: | :---: |
