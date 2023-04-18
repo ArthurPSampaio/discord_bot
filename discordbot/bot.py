@@ -89,15 +89,20 @@ async def lol(ctx, *, player):
     watcher = LolWatcher(api_key)
     my_region = 'br1'
     try:
+
         status = watcher.summoner.by_name(my_region, player)
         ranked_status_player = watcher.league.by_summoner(my_region, status['id'])
-        print(ranked_status_player[0])
-        print(status) # [0] get into to the dic and show player's info
+        champion_mastery = watcher.champion_mastery.by_summoner(my_region, status['id'])
+        solo_duo = 'RANKED_SOLO_5x5'
+        solo_duo_status = watcher.league.entries(my_region, solo_duo, 'GOLD', 'I', 1) + api_search
+        print(status)
+        print('-------')
+        print(ranked_status_player[0]) # [0] get into to the dic and show player's info
         # the error was: it was necessary to access the list first, then manipulate the dict
         embed = discord.Embed(title=status['name'])
 
         queueType = ranked_status_player[0].get('queueType')
-        # needs study the api's riot to know how to get RANKED_FLEX_SR at a player who have RANKED_SOLO_5X5 status
+        # ! needs study the api's riot to know how to get RANKED_FLEX_SR at a player who have RANKED_SOLO_5X5 status
         def players_info():
             embed.add_field(inline=True, name='Wins ', value=str(ranked_status_player[0]['wins']))
             embed.add_field(inline=True, name='Losses ', value=str(ranked_status_player[0]['losses']))
@@ -106,11 +111,10 @@ async def lol(ctx, *, player):
             embed.add_field(inline=True, name='Rank ', value=str(ranked_status_player[0]['rank']))
         
         if queueType == 'RANKED_FLEX_SR':
-            embed.add_field(inline=False, name='Flex', value=str(ranked_status_player[0]['queueType']))
-            players_info()
+            embed.add_field(name='No Matches', value=("This player doesn't have solo/duo matches already"))
         elif queueType == 'RANKED_SOLO_5x5':
-            embed.add_field(inline=False, name='Solo', value=str(ranked_status_player[0]['queueType']))
             players_info()
+            
         else:
             await ctx.send('Player not found')
         await ctx.send(embed=embed)
