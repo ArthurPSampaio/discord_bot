@@ -91,16 +91,18 @@ async def lol(ctx, *, player):
     watcher = LolWatcher(api_key)
     my_region = 'br1'
     try:
-        
+
         status = watcher.summoner.by_name(my_region, player)
         ranked_status_player = watcher.league.by_summoner(my_region, status['id'])
         champid = watcher.champion_mastery.by_summoner(my_region, status['id']) #retorna 240(id) -> kled
         latest = watcher.data_dragon.versions_for_region(my_region)['n']['champion'] #get lol's last version about 'n' and about the champions
         static_champion_list = watcher.data_dragon.champions(latest, False, 'pt_BR') #get champions static info
+        
+        print(champid[0])
 
         champ_key = champid[0]['championId']
    
-        embed = discord.Embed(title=status['name'])
+        embed = discord.Embed(title=status['name'], type= 'rich')
 
         queueType = ranked_status_player[0].get('queueType')
         print(queueType)
@@ -110,14 +112,15 @@ async def lol(ctx, *, player):
             embed.add_field(inline=True, name='Pdls ', value=str(ranked_status_player[0]['leaguePoints']))
             embed.add_field(inline=True, name='Tier ', value=str(ranked_status_player[0]['tier']))
             embed.add_field(inline=True, name='Rank ', value=str(ranked_status_player[0]['rank']))
+            embed.add_field(inline=False, name='', value='')
             champion_name = next((champ['name'] for champ in static_champion_list['data'].values() if champ['key'] == str(champ_key)), None)
             '''
             champ['name'] is getting the value of name in static_champion_list (dictionary).
             So when 'if' starts, the id from static_champion_list stored on champ will pass through an equal test, confirming if champ['key'] is equal to champions key.
             '''
-            print(static_champion_list['data'].values())
             if champion_name:
-                embed.add_field(inline=False, name="Main Champ", value=champion_name)
+                embed.add_field(inline=True, name="Main Champ", value=champion_name)
+            embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
                 
         if ranked_status_player:
             players_info()
@@ -125,12 +128,9 @@ async def lol(ctx, *, player):
             embed.add_field(name='No Matches', value=("This player doesn't have any ranked matches yet"))
             players_info()
         await ctx.send(embed=embed)
+
     except ApiError as e:
         await ctx.send(f'Error: {e}')
-
-
-
-
 
 bot.run(BOTTOKEN.bottoken)
 
