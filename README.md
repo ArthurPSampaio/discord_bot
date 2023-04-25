@@ -11,7 +11,7 @@ Para usar o bot, basta convidá-lo para o seu servidor e digitar os comandos cor
 - !lol: Consulta o perfil de um jogador do League of Legends.
 
 
-# Autores | Authors
+# Autores
 
 | [<img src="https://avatars.githubusercontent.com/u/113519439?v=4" width=115><br><sub>Arthur Pandolfo de Abreu Sampaio</sub>](https://github.com/ArthurPSampaio) |  [<img src="https://avatars.githubusercontent.com/u/122110138?v=4" width=115><br><sub>Cleyton Souza Martins</sub>](https://github.com/CleytonSM) | 
 | :---: | :---: |
