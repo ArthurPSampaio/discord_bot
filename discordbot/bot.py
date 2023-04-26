@@ -98,7 +98,6 @@ async def lol(ctx, *, player):
         latest = watcher.data_dragon.versions_for_region(my_region)['n']['champion']
         static_champion_list = watcher.data_dragon.champions(latest, False, 'pt_BR')
         champ_key = champid[0]['championId']
-        print(static_champion_list['data'])
         embed = discord.Embed(title=status['name'], type='rich')
 
         solo_queue = None
@@ -131,9 +130,9 @@ async def lol(ctx, *, player):
                 embed.add_field(inline=True, name="Main Champ", value=champion_name)
             embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
         elif IndexError:
-            embed.add_field(name='No Rank', value=(f"{player} doesn't have any ranked matches yet."))
+            embed.add_field(name='No Rank', value=(f"{player} has no flex ranked matches yet, try !lolflex."))
         else:
-            embed.add_field(name='No Rank', value=(f"{player} doesn't have any flex ranked matches yet, try !lol."))
+            embed.add_field(name='No Matches', value=(f"{player} has no matches yet."))
         await ctx.send(embed=embed)
 
     except ApiError as e:
@@ -182,9 +181,9 @@ async def lolflex(ctx, *, player):
                 embed.add_field(inline=True, name="Main Champ", value=champion_name)
             embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
         elif IndexError:
-            embed.add_field(name='No Rank', value=(f"{player} doesn't have any ranked matches yet."))
+            embed.add_field(name='No Rank', value=(f"{player} has no flex ranked matches yet, try !lol."))
         else:
-            embed.add_field(name='No Rank', value=(f"{player} doesn't have any solo/duo ranked matches yet, try !lolflex."))
+            embed.add_field(name='No Matches', value=(f"{player} has no ranked matches yet."))
         await ctx.send(embed=embed)
 
     except ApiError as e:
