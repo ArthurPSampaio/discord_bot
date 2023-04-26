@@ -84,9 +84,63 @@ async def img(ctx, *, prompt: str):
 
 
 
-
 @bot.command()
 async def lol(ctx, *, player):
+    api_key = league_of_legendsAPI
+    watcher = LolWatcher(api_key)
+    my_region = 'br1'
+    
+    try:
+
+        status = watcher.summoner.by_name(my_region, player)
+        ranked_status_player = watcher.league.by_summoner(my_region, status['id']) #have one more dict in this list
+        champid = watcher.champion_mastery.by_summoner(my_region, status['id'])
+        latest = watcher.data_dragon.versions_for_region(my_region)['n']['champion']
+        static_champion_list = watcher.data_dragon.champions(latest, False, 'pt_BR')
+        champ_key = champid[0]['championId']
+        print(static_champion_list['data'])
+        embed = discord.Embed(title=status['name'], type='rich')
+
+        solo_queue = None
+
+        for queue in ranked_status_player:
+            if queue['queueType'] == 'RANKED_SOLO_5x5':
+                solo_queue = queue
+                break
+        
+        if solo_queue:
+            embed.add_field(inline=False, name='Queue Type', value='Solo/Duo')
+            embed.add_field(inline=True, name='Wins', value=str(solo_queue['wins']))
+            embed.add_field(inline=True, name='Losses', value=str(solo_queue['losses']))
+            embed.add_field(inline=True, name='LPs', value=str(solo_queue['leaguePoints']))
+            embed.add_field(inline=True, name='Tier', value=str(solo_queue['tier']))
+            embed.add_field(inline=True, name='Rank', value=str(solo_queue['rank']))
+
+            wins = int(solo_queue.get('wins'))
+            losses = int(solo_queue.get('losses'))
+            win_rate = (wins/losses)
+
+            embed.add_field(inline=True, name='Win Rate', value=("%.2f" % win_rate))
+            embed.add_field(inline=False, name='', value='')
+            champion_name = next((champ['name'] for champ in static_champion_list['data'].values() if champ['key'] == str(champ_key)), None)
+            '''
+            champ['name'] is getting the value of name in static_champion_list (dictionary).
+            So when 'if' starts, the id from static_champion_list stored on champ will pass through an equal test, confirming if champ['key'] is equal to champions key.
+            '''
+            if champion_name:
+                embed.add_field(inline=True, name="Main Champ", value=champion_name)
+            embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
+        elif IndexError:
+            embed.add_field(name='No Rank', value=(f"{player} doesn't have any ranked matches yet."))
+        else:
+            embed.add_field(name='No Rank', value=(f"{player} doesn't have any flex ranked matches yet, try !lol."))
+        await ctx.send(embed=embed)
+
+    except ApiError as e:
+        await ctx.send(f'Error: {e}')
+
+@bot.command()
+async def lolflex(ctx, *, player):
     api_key = league_of_legendsAPI
     watcher = LolWatcher(api_key)
     my_region = 'br1'
@@ -97,40 +151,45 @@ async def lol(ctx, *, player):
         champid = watcher.champion_mastery.by_summoner(my_region, status['id']) #retorna 240(id) -> kled
         latest = watcher.data_dragon.versions_for_region(my_region)['n']['champion'] #get lol's last version about 'n' and about the champions
         static_champion_list = watcher.data_dragon.champions(latest, False, 'pt_BR') #get champions static info
-        
-        print(champid[0])
-
         champ_key = champid[0]['championId']
    
-        embed = discord.Embed(title=status['name'], type= 'rich')
+        embed = discord.Embed(title=status['name'], type='rich')
+        
+        flex_queue = None  # variável para armazenar a fila solo encontrada, se houver
+        
+        for queue in ranked_status_player:
+            if queue['queueType'] == 'RANKED_FLEX_SR':
+                flex_queue = queue
+                print(flex_queue)
+                break 
+        
+        if flex_queue:
+            embed.add_field(inline=False, name="Queue Type", value='Flex')
+            embed.add_field(inline=True, name='Wins', value=str(flex_queue['wins']))
+            embed.add_field(inline=True, name='Losses ', value=str(flex_queue['losses']))
+            embed.add_field(inline=True, name='LPs', value=str(flex_queue['leaguePoints']))
+            embed.add_field(inline=True, name='Tier', value=str(flex_queue['tier']))
+            embed.add_field(inline=True, name='Rank', value=str(flex_queue['rank']))
 
-        queueType = ranked_status_player[0].get('queueType')
-        print(queueType)
-        def players_info():
-            embed.add_field(inline=True, name='Wins ', value=str(ranked_status_player[0]['wins']))
-            embed.add_field(inline=True, name='Losses ', value=str(ranked_status_player[0]['losses']))
-            embed.add_field(inline=True, name='Pdls ', value=str(ranked_status_player[0]['leaguePoints']))
-            embed.add_field(inline=True, name='Tier ', value=str(ranked_status_player[0]['tier']))
-            embed.add_field(inline=True, name='Rank ', value=str(ranked_status_player[0]['rank']))
+            wins = int(flex_queue.get('wins'))
+            losses = int(flex_queue.get('losses'))
+            win_rate = (wins/losses)
+
+            embed.add_field(inline=True, name='Win Rate', value=("%.2f" % win_rate))
             embed.add_field(inline=False, name='', value='')
             champion_name = next((champ['name'] for champ in static_champion_list['data'].values() if champ['key'] == str(champ_key)), None)
-            '''
-            champ['name'] is getting the value of name in static_champion_list (dictionary).
-            So when 'if' starts, the id from static_champion_list stored on champ will pass through an equal test, confirming if champ['key'] is equal to champions key.
-            '''
             if champion_name:
                 embed.add_field(inline=True, name="Main Champ", value=champion_name)
             embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
-                
-        if ranked_status_player:
-            players_info()
+        elif IndexError:
+            embed.add_field(name='No Rank', value=(f"{player} doesn't have any ranked matches yet."))
         else:
-            embed.add_field(name='No Matches', value=("This player doesn't have any ranked matches yet"))
-            players_info()
+            embed.add_field(name='No Rank', value=(f"{player} doesn't have any solo/duo ranked matches yet, try !lolflex."))
         await ctx.send(embed=embed)
 
     except ApiError as e:
         await ctx.send(f'Error: {e}')
+
 
 bot.run(BOTTOKEN.bottoken)
 
