@@ -128,7 +128,8 @@ async def lol(ctx, *, player):
             '''
             if champion_name:
                 embed.add_field(inline=True, name="Main Champ", value=champion_name)
-            embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
+            mastery_points = champid[0]['championPoints']
+            embed.add_field(inline=True, name='Mastery Points', value=(f"{mastery_points:,}".replace(',', '.')))
         elif IndexError:
             embed.add_field(name='No Rank', value=(f"{player} has no flex ranked matches yet, try !lolflex."))
         else:
@@ -151,7 +152,7 @@ async def lolflex(ctx, *, player):
         latest = watcher.data_dragon.versions_for_region(my_region)['n']['champion'] #get lol's last version about 'n' and about the champions
         static_champion_list = watcher.data_dragon.champions(latest, False, 'pt_BR') #get champions static info
         champ_key = champid[0]['championId']
-   
+
         embed = discord.Embed(title=status['name'], type='rich')
         
         flex_queue = None  # variável para armazenar a fila solo encontrada, se houver
@@ -159,7 +160,6 @@ async def lolflex(ctx, *, player):
         for queue in ranked_status_player:
             if queue['queueType'] == 'RANKED_FLEX_SR':
                 flex_queue = queue
-                print(flex_queue)
                 break 
         
         if flex_queue:
@@ -179,7 +179,8 @@ async def lolflex(ctx, *, player):
             champion_name = next((champ['name'] for champ in static_champion_list['data'].values() if champ['key'] == str(champ_key)), None)
             if champion_name:
                 embed.add_field(inline=True, name="Main Champ", value=champion_name)
-            embed.add_field(inline=True, name='Mastery Points', value=str(champid[0]['championPoints']))
+            mastery_points = champid[0]['championPoints']
+            embed.add_field(inline=True, name='Mastery Points', value=(f"{mastery_points:,}".replace(',', '.')))
         elif IndexError:
             embed.add_field(name='No Rank', value=(f"{player} has no flex ranked matches yet, try !lol."))
         else:
